@@ -23,14 +23,14 @@ describe('Teams tests', function() {
     expect(body).to.deep.equal(teams);
   });
 
-  // it('should return a specific team by id', async function() {
-  //   sinon.stub(SequelizeTeam, 'findOne').resolves(team as any);
+  it('should return a specific team by id', async function() {
+    sinon.stub(SequelizeTeam, 'findOne').resolves(team as any);
 
-  //   const { status, body } = await chai.request(app).get('/teams/3');
+    const { status, body } = await chai.request(app).get('/teams/3');
 
-  //   expect(status).to.equal(200);
-  //   expect(body).to.deep.equal(team);
-  // });
+    expect(status).to.equal(200);
+    expect(body).to.deep.equal(team);
+  });
 
   afterEach(sinon.restore);
 });
