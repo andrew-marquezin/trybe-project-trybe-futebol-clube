@@ -1,0 +1,30 @@
+import { ServiceResponse } from '../Interfaces/ServiceResponse';
+import IMatch from '../Interfaces/matches/IMatch';
+import { IMatchModel } from '../Interfaces/matches/IMatchModel';
+import MatchModel from '../models/MatchModel';
+
+export default class MatchService {
+  constructor(
+    private _MatchModel: IMatchModel = new MatchModel(),
+  ) { }
+
+  async getAllMatches(): Promise<ServiceResponse<IMatch[]>> {
+    const allMatches = await this._MatchModel.findAll();
+    return { status: 'SUCCESSFUL', data: allMatches };
+  }
+
+  async getFilteredMatches(queryStr: string): Promise<ServiceResponse<IMatch[]>> {
+    const allMatches = await this._MatchModel.findAll();
+
+    if (queryStr === 'true') {
+      const filteredMatches = allMatches.filter(({ inProgress }) => inProgress === true);
+      return { status: 'SUCCESSFUL', data: filteredMatches };
+    }
+    if (queryStr === 'false') {
+      const filteredMatches = allMatches.filter(({ inProgress }) => inProgress === false);
+      return { status: 'SUCCESSFUL', data: filteredMatches };
+    }
+
+    return { status: 'NOT_FOUND', data: { message: 'No match found for your filter' } };
+  }
+}

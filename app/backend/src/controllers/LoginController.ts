@@ -21,6 +21,6 @@ export default class LoginController {
   static returnRole(req: IRequestWithUser, res: Response) {
     const { user } = req;
 
-    res.status(200).json({ role: user.role });
+    res.status(200).json({ role: user?.role });
   }
 }
