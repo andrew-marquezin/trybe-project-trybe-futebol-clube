@@ -1,4 +1,4 @@
-import { ServiceResponse } from '../Interfaces/ServiceResponse';
+import { ServiceMessage, ServiceResponse } from '../Interfaces/ServiceResponse';
 import IMatch from '../Interfaces/matches/IMatch';
 import { IMatchModel } from '../Interfaces/matches/IMatchModel';
 import MatchModel from '../models/MatchModel';
@@ -26,5 +26,12 @@ export default class MatchService {
     }
 
     return { status: 'NOT_FOUND', data: { message: 'No match found for your filter' } };
+  }
+
+  async endMatch(id: number): Promise<ServiceResponse<ServiceMessage>> {
+    const modelReturn = await this._MatchModel.finish(id);
+
+    if (modelReturn === 'NOK') return { status: 'NOT_FOUND', data: { message: 'Match nof found' } };
+    return { status: 'SUCCESSFUL', data: { message: 'Finished' } };
   }
 }

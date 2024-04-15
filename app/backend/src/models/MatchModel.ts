@@ -23,4 +23,11 @@ export default class MatchModel implements IMatchModel {
       awayTeam: { teamName: match.awayTeam?.teamName },
     }));
   }
+
+  async finish(id:number): Promise<'OK' | 'NOK'> {
+    const [affectedRows] = await this._model.update({ inProgress: false }, { where: { id } });
+
+    if (affectedRows === 0) return 'NOK';
+    return 'OK';
+  }
 }

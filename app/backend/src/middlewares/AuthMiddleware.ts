@@ -6,7 +6,9 @@ import IRequestWithUser from '../Interfaces/IRequestWithUser';
 export default class AuthMiddleware {
   constructor(
     private _UserModel = new UserModel(),
-  ) { }
+  ) {
+    this.authenticate = this.authenticate.bind(this);
+  }
 
   static extractToken(auth: string) {
     return auth.split(' ')[1];
