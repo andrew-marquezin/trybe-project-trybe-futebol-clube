@@ -31,7 +31,15 @@ export default class MatchService {
   async endMatch(id: number): Promise<ServiceResponse<ServiceMessage>> {
     const modelReturn = await this._MatchModel.finish(id);
 
-    if (modelReturn === 'NOK') return { status: 'NOT_FOUND', data: { message: 'Match nof found' } };
+    if (!modelReturn) return { status: 'NOT_FOUND', data: { message: 'Match not found' } };
+    return { status: 'SUCCESSFUL', data: { message: 'Finished' } };
+  }
+
+  async updateMatch(id: number, homeTeamGoals: number, awayTeamGoals: number):
+  Promise<ServiceResponse<ServiceMessage>> {
+    const modelReturn = await this._MatchModel.updateGoals(id, homeTeamGoals, awayTeamGoals);
+
+    if (!modelReturn) return { status: 'NOT_FOUND', data: { message: 'Match not found' } };
     return { status: 'SUCCESSFUL', data: { message: 'Finished' } };
   }
 }

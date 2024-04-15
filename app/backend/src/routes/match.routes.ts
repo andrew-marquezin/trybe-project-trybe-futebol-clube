@@ -9,6 +9,11 @@ const router = Router();
 
 router.get('/', (req: Request, res: Response) => matchController.getAllMatches(req, res));
 router.patch(
+  '/:id',
+  authMiddleware.authenticate,
+  (req: Request, res: Response) => matchController.updateMatch(req, res),
+);
+router.patch(
   '/:id/finish',
   authMiddleware.authenticate,
   (req: Request, res: Response) => matchController.endMatch(req, res),

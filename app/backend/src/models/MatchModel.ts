@@ -24,10 +24,21 @@ export default class MatchModel implements IMatchModel {
     }));
   }
 
-  async finish(id:number): Promise<'OK' | 'NOK'> {
+  async finish(id:number): Promise<'OK' | null> {
     const [affectedRows] = await this._model.update({ inProgress: false }, { where: { id } });
 
-    if (affectedRows === 0) return 'NOK';
+    if (affectedRows === 0) return null;
+    return 'OK';
+  }
+
+  async updateGoals(id: number, homeTeamGoals: number, awayTeamGoals: number):
+  Promise<'OK' | null> {
+    const [affectedRows] = await this._model.update({
+      homeTeamGoals,
+      awayTeamGoals,
+    }, { where: { id } });
+
+    if (affectedRows === 0) return null;
     return 'OK';
   }
 }
