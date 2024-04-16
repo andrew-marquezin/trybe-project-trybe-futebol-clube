@@ -24,7 +24,7 @@ export default class LeaderboardService extends MatchModel {
     return 0;
   }
 
-  static createTeam(match: IMatch) {
+  static createHomeTeam(match: IMatch) {
     return {
       name: match.homeTeam?.teamName,
       totalPoints: LeaderboardService.totalPoints(match.homeTeamGoals, match.awayTeamGoals),
@@ -37,7 +37,20 @@ export default class LeaderboardService extends MatchModel {
     };
   }
 
-  async leaderboard() {
+  static createAwayTeam(match: IMatch) {
+    return {
+      name: match.homeTeam?.teamName,
+      totalPoints: LeaderboardService.totalPoints(match.awayTeamGoals, match.homeTeamGoals),
+      totalGames: 1,
+      totalVictories: LeaderboardService.win(match.awayTeamGoals, match.homeTeamGoals),
+      totalDraws: LeaderboardService.draw(match.awayTeamGoals, match.homeTeamGoals),
+      totalLosses: LeaderboardService.loss(match.awayTeamGoals, match.homeTeamGoals),
+      goalsFavor: match.awayTeamGoals,
+      goalsOwn: match.homeTeamGoals,
+    };
+  }
+
+  async homeLeaderboard() {
     const matches = await this.findAll({ inProgress: false });
     const board: ILeaderboard[] = [];
 
@@ -53,7 +66,29 @@ export default class LeaderboardService extends MatchModel {
         ediTeam.totalLosses += LeaderboardService.loss(match.homeTeamGoals, match.awayTeamGoals);
         ediTeam.goalsFavor += match.homeTeamGoals;
         ediTeam.goalsOwn += match.awayTeamGoals;
-      } else { board.push(LeaderboardService.createTeam(match)); }
+      } else { board.push(LeaderboardService.createHomeTeam(match)); }
+    });
+
+    return board;
+  }
+
+  async awayLeaderboard() {
+    const matches = await this.findAll({ inProgress: false });
+    const board: ILeaderboard[] = [];
+
+    matches.forEach((match) => {
+      const currTeam = board.findIndex((t) => t.name === match.awayTeam?.teamName);
+      if (currTeam !== -1) {
+        const ediTeam = board[currTeam];
+        ediTeam.totalPoints += LeaderboardService
+          .totalPoints(match.awayTeamGoals, match.homeTeamGoals);
+        ediTeam.totalGames += 1;
+        ediTeam.totalVictories += LeaderboardService.win(match.awayTeamGoals, match.homeTeamGoals);
+        ediTeam.totalDraws += LeaderboardService.draw(match.awayTeamGoals, match.homeTeamGoals);
+        ediTeam.totalLosses += LeaderboardService.loss(match.awayTeamGoals, match.homeTeamGoals);
+        ediTeam.goalsFavor += match.awayTeamGoals;
+        ediTeam.goalsOwn += match.homeTeamGoals;
+      } else { board.push(LeaderboardService.createHomeTeam(match)); }
     });
 
     return board;
