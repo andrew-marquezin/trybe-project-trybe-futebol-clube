@@ -1,5 +1,5 @@
 import SequelizeTeam from '../database/models/SequelizeTeam';
-import IMatch from '../Interfaces/matches/IMatch';
+import IMatch, { createReq, updateReq } from '../Interfaces/matches/IMatch';
 import { IMatchModel } from '../Interfaces/matches/IMatchModel';
 import SequelizeMatch from '../database/models/SequelizeMatch';
 
@@ -31,7 +31,7 @@ export default class MatchModel implements IMatchModel {
     return 'OK';
   }
 
-  async updateGoals(id: number, homeTeamGoals: number, awayTeamGoals: number):
+  async updateGoals({ id, homeTeamGoals, awayTeamGoals }: updateReq):
   Promise<'OK' | null> {
     const [affectedRows] = await this._model.update({
       homeTeamGoals,
@@ -40,5 +40,19 @@ export default class MatchModel implements IMatchModel {
 
     if (affectedRows === 0) return null;
     return 'OK';
+  }
+
+  async create({ homeTeamId, awayTeamId, homeTeamGoals, awayTeamGoals }: createReq):
+  Promise<IMatch | null> {
+    const dbReturn = await this._model.create({
+      homeTeamId,
+      awayTeamId,
+      homeTeamGoals,
+      awayTeamGoals,
+      inProgress: true,
+    });
+
+    if (!dbReturn) return null;
+    return dbReturn;
   }
 }

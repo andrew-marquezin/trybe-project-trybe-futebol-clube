@@ -1,11 +1,14 @@
+import { ITeamModel } from '../Interfaces/teams/ITeamModel';
 import { ServiceMessage, ServiceResponse } from '../Interfaces/ServiceResponse';
-import IMatch from '../Interfaces/matches/IMatch';
+import IMatch, { createReq } from '../Interfaces/matches/IMatch';
 import { IMatchModel } from '../Interfaces/matches/IMatchModel';
 import MatchModel from '../models/MatchModel';
+import TeamModel from '../models/TeamModel';
 
 export default class MatchService {
   constructor(
     private _MatchModel: IMatchModel = new MatchModel(),
+    private _TeamModel: ITeamModel = new TeamModel(),
   ) { }
 
   async getAllMatches(): Promise<ServiceResponse<IMatch[]>> {
@@ -37,9 +40,28 @@ export default class MatchService {
 
   async updateMatch(id: number, homeTeamGoals: number, awayTeamGoals: number):
   Promise<ServiceResponse<ServiceMessage>> {
-    const modelReturn = await this._MatchModel.updateGoals(id, homeTeamGoals, awayTeamGoals);
+    const modelReturn = await this._MatchModel.updateGoals({ id, homeTeamGoals, awayTeamGoals });
 
     if (!modelReturn) return { status: 'NOT_FOUND', data: { message: 'Match not found' } };
     return { status: 'SUCCESSFUL', data: { message: 'Finished' } };
+  }
+
+  async createMatch(body: createReq): Promise<ServiceResponse<IMatch>> {
+    const { homeTeamId, awayTeamId } = body;
+    if (homeTeamId === awayTeamId) {
+      return { status: 'UNPROCESSABLE',
+        data: { message: 'It is not possible to create a match with two equal teams' } };
+    }
+
+    const homeTeam = await this._TeamModel.findById(homeTeamId);
+    const awayTeam = await this._TeamModel.findById(awayTeamId);
+    if (!homeTeam || !awayTeam) {
+      return { status: 'NOT_FOUND', data: { message: 'There is no team with such id!' } };
+    }
+
+    const newMatch = await this._MatchModel.create(body);
+
+    if (!newMatch) return { status: 'CONFLICT', data: { message: 'Match not created' } };
+    return { status: 'SUCCESSFUL', data: newMatch };
   }
 }

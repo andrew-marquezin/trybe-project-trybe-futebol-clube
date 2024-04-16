@@ -14,3 +14,16 @@ export default interface IMatch {
     teamName?: string,
   }
 }
+
+export interface updateReq {
+  id: number,
+  homeTeamGoals: number,
+  awayTeamGoals: number,
+}
+
+export interface createReq {
+  homeTeamId: number,
+  awayTeamId: number,
+  homeTeamGoals: number,
+  awayTeamGoals: number,
+}

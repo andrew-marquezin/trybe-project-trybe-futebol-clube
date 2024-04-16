@@ -37,4 +37,13 @@ export default class MatchController {
       .updateMatch(Number(id), homeTeamGoals, awayTeamGoals);
     res.status(mapStatusHTTP(serviceResponse.status)).json(serviceResponse.data);
   }
+
+  async createMatch(req: Request, res: Response) {
+    const serviceResponse = await this._matchService.createMatch(req.body);
+
+    if (serviceResponse.status !== 'SUCCESSFUL') {
+      return res.status(mapStatusHTTP(serviceResponse.status)).json(serviceResponse.data);
+    }
+    return res.status(201).json(serviceResponse.data);
+  }
 }
