@@ -3,14 +3,18 @@ import IMatch, { createReq, updateReq } from '../Interfaces/matches/IMatch';
 import { IMatchModel } from '../Interfaces/matches/IMatchModel';
 import SequelizeMatch from '../database/models/SequelizeMatch';
 
+interface WhereOptions {
+  inProgress?: boolean;
+}
 export default class MatchModel implements IMatchModel {
   private _model = SequelizeMatch;
 
-  async findAll(): Promise<IMatch[]> {
-    const dbReturn: IMatch[] = await this._model.findAll({ include: [
-      { model: SequelizeTeam, as: 'homeTeam', attributes: ['teamName'] },
-      { model: SequelizeTeam, as: 'awayTeam', attributes: ['teamName'] },
-    ] });
+  async findAll(where?: WhereOptions): Promise<IMatch[]> {
+    const dbReturn: IMatch[] = await this._model.findAll({ ...where,
+      include: [
+        { model: SequelizeTeam, as: 'homeTeam', attributes: ['teamName'] },
+        { model: SequelizeTeam, as: 'awayTeam', attributes: ['teamName'] },
+      ] });
 
     return dbReturn.map((match) => ({
       id: match.id,

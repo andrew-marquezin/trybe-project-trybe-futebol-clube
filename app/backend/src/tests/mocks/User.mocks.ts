@@ -15,7 +15,31 @@ const validLoginBody = {
   password: validPassword,
 }
 
+const missingEmail = {
+  email: '',
+  password: validPassword,
+}
+
+const missingPassword = {
+  email: validEmail,
+  password: ''
+}
+
+const invalidEmail = {
+  email: 'bobo',
+  password: validPassword,
+}
+
+const invalidPassword = {
+  email: validEmail,
+  password: 'banana',
+}
+
 export default {
   existingUser,
   validLoginBody,
+  missingEmail,
+  missingPassword,
+  invalidEmail,
+  invalidPassword,
 }

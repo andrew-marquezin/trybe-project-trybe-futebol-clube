@@ -25,5 +25,43 @@ describe('Login tests', function() {
     expect(body).to.have.key('token');
   });
 
+  it('with invalid email, should return an error', async function () {
+    const requestBody = UserMocks.invalidEmail;
+    sinon.stub(SequelizeUser, 'findOne').resolves(null);
+
+    const { status, body } = await chai.request(app).post('/login').send(requestBody);
+
+    expect(status).to.be.equal(401);
+    expect(body).to.be.deep.equal({ message: "Invalid email or password" })
+  });
+
+  it('with invalid password, should return an error', async function () {
+    const requestBody = UserMocks.invalidPassword;
+    sinon.stub(SequelizeUser, 'findOne').resolves(null);
+
+    const { status, body } = await chai.request(app).post('/login').send(requestBody);
+
+    expect(status).to.be.equal(401);
+    expect(body).to.be.deep.equal({ message: "Invalid email or password" })
+  });
+
+  it('with no email, should return an error', async function () {
+    const requestBody = UserMocks.missingEmail;
+
+    const { status, body } = await chai.request(app).post('/login').send(requestBody);
+
+    expect(status).to.be.equal(400);
+    expect(body).to.be.deep.equal({ message: "All fields must be filled" })
+  });
+
+  it('with no password, should return an error', async function () {
+    const requestBody = UserMocks.missingPassword;
+
+    const { status, body } = await chai.request(app).post('/login').send(requestBody);
+
+    expect(status).to.be.equal(400);
+    expect(body).to.be.deep.equal({ message: "All fields must be filled" })
+  });
+
   afterEach(sinon.restore);
 });
